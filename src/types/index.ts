@@ -66,3 +66,52 @@ export interface Agent {
   server?: string;
   vaultAccess: string[];
 }
+
+// Work page types
+
+export type WorkItemType = "taskmaster" | "worker";
+export type WorkItemUrgency = "warning" | "info" | "none";
+export type WorkItemStatus = "Ready for merge" | "Needs review" | "Waiting" | "In progress" | "Draft";
+
+export interface WorkItem {
+  id: string;
+  agentName: string;
+  type: WorkItemType;
+  subject: string;
+  context?: string;
+  urgency: WorkItemUrgency;
+  status?: WorkItemStatus;
+  detail: WorkItemDetail;
+}
+
+export interface WorkItemDetail {
+  heading: string;
+  blocks: ContentBlock[];
+  draftResponse?: string;
+  sendLabel?: string;
+}
+
+export type ContentBlock =
+  | { kind: "text"; value: string }
+  | { kind: "italic"; value: string };
+
+export interface RoadmapSection {
+  label: string;
+  count: number;
+  items?: { text: string; done: boolean; tag?: string }[];
+}
+
+export interface WorkerStatus {
+  name: string;
+  status: string;
+  detail?: string;
+  historyLink?: boolean;
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  tag?: string;
+  startSlot: number; // 0-based slot on the timeline
+  span: number;      // how many slots wide
+}
