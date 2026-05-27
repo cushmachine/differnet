@@ -7,7 +7,6 @@ created: 2026-05-27
 modified: 2026-05-27
 triggers: []
 secrets: []
-managed: true
 ---
 
 # Integration Connector
