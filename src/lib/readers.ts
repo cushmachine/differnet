@@ -264,7 +264,10 @@ export async function readDaemonStatus(): Promise<DaemonStatus> {
   const heartbeatPath = resolve("data", ".heartbeat");
 
   if (!(await exists(heartbeatPath))) {
-    return { color: "grey", lastHeartbeat: null, label: "Not installed" };
+    // Distinguish "never run" from "stopped" by checking if the DB exists
+    const dbExists = await exists(resolve("data", "differnet.db"));
+    const label = dbExists ? "Stopped" : "Not installed";
+    return { color: "grey", lastHeartbeat: null, label };
   }
 
   const stat = await fs.stat(heartbeatPath);

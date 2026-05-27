@@ -28,23 +28,32 @@ export async function toggleRoutineStatus(slug: string) {
   revalidatePath("/routines");
 }
 
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function toggleDaemon(): Promise<{ error?: string }> {
   const pidFile = path.join(ROOT, "data", ".daemon.pid");
 
-  let running = false;
+  let runningPid: number | null = null;
   try {
     const pid = parseInt(fsSync.readFileSync(pidFile, "utf-8").trim(), 10);
     process.kill(pid, 0);
-    running = true;
+    runningPid = pid;
   } catch {}
 
   try {
-    if (running) {
-      const pid = parseInt(fsSync.readFileSync(pidFile, "utf-8").trim(), 10);
-      process.kill(pid, "SIGTERM");
+    if (runningPid) {
+      process.kill(runningPid, "SIGTERM");
+      // Wait for process to die
+      for (let i = 0; i < 10; i++) {
+        await sleep(200);
+        try { process.kill(runningPid, 0); } catch { break; }
+      }
       try { fsSync.unlinkSync(pidFile); } catch {}
+      // Remove heartbeat so status immediately shows "not running"
+      try { fsSync.unlinkSync(path.join(ROOT, "data", ".heartbeat")); } catch {}
     } else {
-      // Next.js server runs from the package root (via npm run dev or npx differnet dev)
       const daemonEntry = path.join(process.cwd(), "daemon", "index.mjs");
       const logFile = path.join(ROOT, "data", "daemon.log");
 
@@ -59,9 +68,11 @@ export async function toggleDaemon(): Promise<{ error?: string }> {
         env: { PATH: process.env.PATH, HOME: process.env.HOME, DIFFERNET_ROOT: ROOT },
       });
       child.unref();
+      // Wait for daemon to write heartbeat so the UI picks up the new state
+      await sleep(2000);
     }
   } catch (err) {
-    return { error: "Failed to toggle daemon" };
+    return { error: `Failed to toggle daemon: ${(err as Error).message}` };
   }
 
   revalidatePath("/routines");
