@@ -2,10 +2,9 @@ export interface SkillMeta {
   slug: string;
   name: string;
   description: string;
-  type: "meta" | "skill";
-  automation: "full" | "assisted" | "documented";
   owner: string;
   visibility: string[];
+  managed: boolean;
   created: string;
   modified: string;
   triggers: SkillTrigger[];
@@ -20,6 +19,8 @@ export interface SkillTrigger {
 export interface SkillDetail extends SkillMeta {
   content: string;
 }
+
+export type { AppSettings } from "@/lib/readers";
 
 export type DaemonStatusColor = "green" | "yellow" | "orange" | "grey" | "purple";
 

@@ -1,8 +1,6 @@
 ---
 name: Inbox Triage
 description: Reviews incoming items from connected sources and categorizes by urgency and action required
-type: skill
-automation: assisted
 owner: system
 visibility: [operations]
 created: 2026-05-27
@@ -11,7 +9,6 @@ triggers:
   - schedule: "every 2 hours during business hours"
 secrets:
   - SLACK_BOT_TOKEN
-managed: true
 ---
 
 # Inbox Triage

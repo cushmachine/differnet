@@ -1,8 +1,6 @@
 ---
 name: Weekly Summary
 description: Aggregates data from connected systems into a weekly ops digest
-type: skill
-automation: full
 owner: system
 visibility: [operations]
 created: 2026-05-27
@@ -11,7 +9,6 @@ triggers:
   - schedule: "every Monday at 9am"
 secrets:
   - SLACK_WEBHOOK_URL
-managed: true
 ---
 
 # Weekly Summary

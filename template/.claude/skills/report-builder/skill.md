@@ -1,15 +1,12 @@
 ---
 name: Report Builder
 description: Creates a new reporting skill from an example report — generates the skill, template, and schedule
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27
 modified: 2026-05-27
 triggers: []
 secrets: []
-managed: true
 ---
 
 # Report Builder

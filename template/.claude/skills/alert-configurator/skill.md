@@ -1,15 +1,12 @@
 ---
 name: Alert Configurator
 description: Sets up monitoring alerts with conditions, thresholds, and notification channels
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27
 modified: 2026-05-27
 triggers: []
 secrets: []
-managed: true
 ---
 
 # Alert Configurator

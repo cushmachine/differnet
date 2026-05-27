@@ -1,8 +1,6 @@
 ---
 name: Edit Org
 description: Update the org chart — add or remove team members, change roles, restructure teams
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27

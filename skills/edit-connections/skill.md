@@ -1,8 +1,6 @@
 ---
 name: Edit Connections
 description: Map how your systems and counterparties connect to each other — add, update, or remove pairwise relationships
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27

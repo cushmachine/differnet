@@ -1,8 +1,6 @@
 ---
 name: Integration Connector
 description: Guides setup of a new integration — API keys, OAuth, webhooks — and stores config in vault
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27
@@ -43,7 +41,6 @@ Common integrations:
 
 ```yaml
 name: System Name
-type: api-key | oauth | webhook
 auth_secret: SECRET_NAME_IN_ENV
 base_url: https://api.example.com
 scopes: [read, write]

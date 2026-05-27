@@ -1,15 +1,12 @@
 ---
 name: Onboarding
 description: Walks a new user through setting up their company brain — populates map, vault, and first memory pages
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27
 modified: 2026-05-27
 triggers: []
 secrets: []
-managed: true
 ---
 
 # Onboarding

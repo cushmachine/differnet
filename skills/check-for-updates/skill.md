@@ -1,8 +1,6 @@
 ---
 name: Check for Updates
 description: Checks if a new version of the differnet package is available and notifies via inbox
-type: skill
-automation: full
 owner: system
 visibility: [all]
 created: 2026-05-27

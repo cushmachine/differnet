@@ -1,8 +1,6 @@
 ---
 name: Data Reconciler
 description: Cross-references data across systems and the company map to find inconsistencies
-type: skill
-automation: full
 owner: system
 visibility: [operations]
 created: 2026-05-27
@@ -10,7 +8,6 @@ modified: 2026-05-27
 triggers:
   - schedule: "daily at 6am"
 secrets: []
-managed: true
 ---
 
 # Data Reconciler

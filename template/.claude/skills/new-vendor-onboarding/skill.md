@@ -1,15 +1,12 @@
 ---
 name: New Vendor Onboarding
 description: Step-by-step process for onboarding a new vendor — from initial assessment to first PO
-type: skill
-automation: assisted
 owner: system
 visibility: [operations]
 created: 2026-05-27
 modified: 2026-05-27
 triggers: []
 secrets: []
-managed: true
 ---
 
 # New Vendor Onboarding

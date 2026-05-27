@@ -1,8 +1,6 @@
 ---
 name: Monthly Close
 description: Checklist and automation for end-of-month operational and financial close
-type: skill
-automation: assisted
 owner: system
 visibility: [finance]
 created: 2026-05-27
@@ -10,7 +8,6 @@ modified: 2026-05-27
 triggers:
   - schedule: "last business day of month at 9am"
 secrets: []
-managed: true
 ---
 
 # Monthly Close

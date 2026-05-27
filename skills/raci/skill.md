@@ -1,8 +1,6 @@
 ---
 name: RACI
 description: Create or update the RACI matrix — define who is responsible, accountable, consulted, and informed for each decision type
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27

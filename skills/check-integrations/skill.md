@@ -1,8 +1,6 @@
 ---
 name: Check Integrations
 description: Pings integration health endpoints and updates connection status, scoped to the user's teams
-type: skill
-automation: full
 owner: system
 visibility: [all]
 created: 2026-05-27

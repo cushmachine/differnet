@@ -1,8 +1,6 @@
 ---
 name: Sync to GitHub
 description: Commits and pushes all changes to the remote repository, dispatches inbox message on failure
-type: skill
-automation: full
 owner: system
 visibility: [all]
 created: 2026-05-27

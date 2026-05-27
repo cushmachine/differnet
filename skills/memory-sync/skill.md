@@ -1,8 +1,6 @@
 ---
 name: Memory Sync
 description: Synthesizes timeline entries in memory pages into compiled truth sections
-type: meta
-automation: full
 owner: system
 visibility: [all]
 created: 2026-05-27

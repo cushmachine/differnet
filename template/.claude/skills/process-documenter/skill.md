@@ -1,15 +1,12 @@
 ---
 name: Process Documenter
 description: Interviews the user about a business process, then creates a skill with runbook and automation plan
-type: meta
-automation: assisted
 owner: system
 visibility: [all]
 created: 2026-05-27
 modified: 2026-05-27
 triggers: []
 secrets: []
-managed: true
 ---
 
 # Process Documenter
