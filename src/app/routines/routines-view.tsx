@@ -69,6 +69,25 @@ const tabs = [
   { id: "activity", label: "Activity" },
 ];
 
+function ToggleSwitch({ active, onToggle }: { active: boolean; onToggle: () => void }) {
+  return (
+    <button
+      onClick={onToggle}
+      className={cn(
+        "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
+        active ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-600"
+      )}
+    >
+      <span
+        className={cn(
+          "inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform",
+          active ? "translate-x-[18px]" : "translate-x-[3px]"
+        )}
+      />
+    </button>
+  );
+}
+
 export function RoutinesView({
   routines,
   daemonStatus,
@@ -100,10 +119,10 @@ export function RoutinesView({
   const isRunning = daemonStatus.color === "green" || daemonStatus.color === "yellow";
 
   return (
-    <div className="p-6 max-w-5xl">
-      <div className="flex items-center justify-between mb-1">
+    <div className="p-4 md:p-6 max-w-5xl">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-1">
         <h1 className="text-lg font-semibold">Routines</h1>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
           <span className={cn("h-2 w-2 rounded-full", daemonDot[daemonStatus.color])} />
           Daemon: {daemonStatus.label}
           {daemonStatus.lastHeartbeat && (
@@ -125,7 +144,7 @@ export function RoutinesView({
       </div>
 
       {daemonError && (
-        <div className="text-xs text-red-500 mb-2 text-right">{daemonError}</div>
+        <div className="text-xs text-red-500 mb-2 md:text-right">{daemonError}</div>
       )}
 
       <div className="mb-4">
@@ -173,58 +192,77 @@ export function RoutinesView({
             </code>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-8"></TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Schedule</TableHead>
-                <TableHead>Skills</TableHead>
-                <TableHead>Last Run</TableHead>
-                <TableHead className="w-20">Enabled</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {routines.map((routine) => (
-                <TableRow key={routine.slug}>
-                  <TableCell>
-                    <span className={cn("inline-block h-2 w-2 rounded-full", statusDot[routine.status] ?? "bg-zinc-300")} />
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{routine.name}</div>
-                    {routine.description && (
-                      <div className="text-xs text-muted-foreground">{routine.description}</div>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {cronToLabel(routine.schedule)}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {routine.skills.join(", ")}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {lastRuns[routine.slug] ?? "—"}
-                  </TableCell>
-                  <TableCell>
-                    <button
-                      onClick={() => toggleRoutineStatus(routine.slug)}
-                      className={cn(
-                        "relative inline-flex h-5 w-9 items-center rounded-full transition-colors",
-                        routine.status === "active" ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-600"
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform",
-                          routine.status === "active" ? "translate-x-[18px]" : "translate-x-[3px]"
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-8"></TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Schedule</TableHead>
+                    <TableHead>Skills</TableHead>
+                    <TableHead>Last Run</TableHead>
+                    <TableHead className="w-20">Enabled</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {routines.map((routine) => (
+                    <TableRow key={routine.slug}>
+                      <TableCell>
+                        <span className={cn("inline-block h-2 w-2 rounded-full", statusDot[routine.status] ?? "bg-zinc-300")} />
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{routine.name}</div>
+                        {routine.description && (
+                          <div className="text-xs text-muted-foreground">{routine.description}</div>
                         )}
-                      />
-                    </button>
-                  </TableCell>
-                </TableRow>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {cronToLabel(routine.schedule)}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {routine.skills.join(", ")}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {lastRuns[routine.slug] ?? "—"}
+                      </TableCell>
+                      <TableCell>
+                        <ToggleSwitch
+                          active={routine.status === "active"}
+                          onToggle={() => toggleRoutineStatus(routine.slug)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="md:hidden space-y-2">
+              {routines.map((routine) => (
+                <div key={routine.slug} className="border rounded-md p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={cn("h-2 w-2 rounded-full", statusDot[routine.status] ?? "bg-zinc-300")} />
+                      <span className="font-medium text-sm">{routine.name}</span>
+                    </div>
+                    <ToggleSwitch
+                      active={routine.status === "active"}
+                      onToggle={() => toggleRoutineStatus(routine.slug)}
+                    />
+                  </div>
+                  {routine.description && (
+                    <p className="text-xs text-muted-foreground">{routine.description}</p>
+                  )}
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>{cronToLabel(routine.schedule)}</span>
+                    <span>Skills: {routine.skills.join(", ")}</span>
+                    <span>Last: {lastRuns[routine.slug] ?? "—"}</span>
+                  </div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          </>
         )
       ) : (
         activity.length === 0 ? (
@@ -235,34 +273,54 @@ export function RoutinesView({
             </p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-8"></TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Actor</TableHead>
-                <TableHead>Description</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <>
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-8"></TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Actor</TableHead>
+                    <TableHead>Description</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {activity.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell>
+                        <span className={cn("inline-block h-2 w-2 rounded-full", activityStatusDot[entry.status] ?? "bg-zinc-300")} />
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                        {entry.timestamp}
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {entry.type.replace(/_/g, " ")}
+                      </TableCell>
+                      <TableCell className="text-sm">{entry.actor}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{entry.description}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="md:hidden space-y-2">
               {activity.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell>
-                    <span className={cn("inline-block h-2 w-2 rounded-full", activityStatusDot[entry.status] ?? "bg-zinc-300")} />
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
-                    {entry.timestamp}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">
-                    {entry.type.replace(/_/g, " ")}
-                  </TableCell>
-                  <TableCell className="text-sm">{entry.actor}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">{entry.description}</TableCell>
-                </TableRow>
+                <div key={entry.id} className="border rounded-md p-3 space-y-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={cn("h-2 w-2 rounded-full", activityStatusDot[entry.status] ?? "bg-zinc-300")} />
+                      <span className="text-sm font-medium">{entry.actor}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">{entry.timestamp}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{entry.type.replace(/_/g, " ")}</div>
+                  <div className="text-sm text-muted-foreground">{entry.description}</div>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          </>
         )
       )}
     </div>

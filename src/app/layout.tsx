@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/sidebar";
+import { Sidebar, MobileSidebar } from "@/components/layout/sidebar";
 import { readInbox, readDaemonStatus, readSettings } from "@/lib/readers";
 
 export const dynamic = "force-dynamic";
@@ -44,9 +44,21 @@ export default async function RootLayout({
             daemonStatus={{ color: daemonStatus.color, label: daemonStatus.label }}
             hiddenPages={settings.hidden_pages}
           />
-          <main className="flex-1 overflow-auto bg-white dark:bg-zinc-950">
-            {children}
-          </main>
+          <div className="flex flex-1 flex-col overflow-hidden">
+            <header className="flex md:hidden items-center gap-3 border-b bg-zinc-950 px-3 py-2">
+              <MobileSidebar
+                unreadCount={unreadCount}
+                daemonStatus={{ color: daemonStatus.color, label: daemonStatus.label }}
+                hiddenPages={settings.hidden_pages}
+              />
+              <span className="text-sm font-semibold tracking-tight text-white font-mono">
+                differnet
+              </span>
+            </header>
+            <main className="flex-1 overflow-auto bg-white dark:bg-zinc-950">
+              {children}
+            </main>
+          </div>
         </div>
       </body>
     </html>

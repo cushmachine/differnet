@@ -48,7 +48,7 @@ export default async function VaultPage() {
     : [];
 
   return (
-    <div className="p-6 max-w-5xl space-y-8">
+    <div className="p-4 md:p-6 max-w-5xl space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">Vault</h1>
         <EditPrompt commands={[
@@ -111,39 +111,62 @@ function IntegrationTable({
   dimmed?: boolean;
 }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-8"></TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Teams</TableHead>
-          <TableHead>Secret</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Last Checked</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <>
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-8"></TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Teams</TableHead>
+              <TableHead>Secret</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Last Checked</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {integrations.map((int) => (
+              <TableRow key={int.slug} className={cn(dimmed && "opacity-50")}>
+                <TableCell>
+                  <span className={cn("inline-block h-2 w-2 rounded-full", statusDot[int.status])} />
+                </TableCell>
+                <TableCell className="font-medium">{int.name}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {int.teams.length > 0 ? int.teams.join(", ") : "—"}
+                </TableCell>
+                <TableCell>
+                  <code className="text-xs">{int.auth_secret || "—"}</code>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  {statusLabel[int.status] ?? int.status}
+                </TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {int.last_checked ?? "Never"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="md:hidden space-y-2">
         {integrations.map((int) => (
-          <TableRow key={int.slug} className={cn(dimmed && "opacity-50")}>
-            <TableCell>
-              <span className={cn("inline-block h-2 w-2 rounded-full", statusDot[int.status])} />
-            </TableCell>
-            <TableCell className="font-medium">{int.name}</TableCell>
-            <TableCell className="text-xs text-muted-foreground">
-              {int.teams.length > 0 ? int.teams.join(", ") : "—"}
-            </TableCell>
-            <TableCell>
-              <code className="text-xs">{int.auth_secret || "—"}</code>
-            </TableCell>
-            <TableCell className="text-muted-foreground">
-              {statusLabel[int.status] ?? int.status}
-            </TableCell>
-            <TableCell className="text-xs text-muted-foreground">
-              {int.last_checked ?? "Never"}
-            </TableCell>
-          </TableRow>
+          <div key={int.slug} className={cn("border rounded-md p-3 space-y-1.5", dimmed && "opacity-50")}>
+            <div className="flex items-center gap-2">
+              <span className={cn("h-2 w-2 rounded-full", statusDot[int.status])} />
+              <span className="font-medium text-sm">{int.name}</span>
+              <span className="text-xs text-muted-foreground ml-auto">
+                {statusLabel[int.status] ?? int.status}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              {int.teams.length > 0 && <span>Teams: {int.teams.join(", ")}</span>}
+              <span>Secret: <code className="text-[11px]">{int.auth_secret || "—"}</code></span>
+              <span>Checked: {int.last_checked ?? "Never"}</span>
+            </div>
+          </div>
         ))}
-      </TableBody>
-    </Table>
+      </div>
+    </>
   );
 }

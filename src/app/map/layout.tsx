@@ -16,7 +16,7 @@ export default function MapLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-1 px-6 pt-4 pb-2">
+      <div className="flex items-center gap-1 px-4 md:px-6 pt-4 pb-2 overflow-x-auto">
         {subtabs.map((tab) => (
           <Link
             key={tab.href}

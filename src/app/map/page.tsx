@@ -32,7 +32,7 @@ export default async function OrgMapPage() {
   const teams = (data.teams as Team[]) ?? [];
 
   return (
-    <div className="p-6 max-w-5xl space-y-8">
+    <div className="p-4 md:p-6 max-w-5xl space-y-8">
       {company && (
         <div>
           <div className="flex items-center justify-between">
@@ -59,24 +59,40 @@ export default async function OrgMapPage() {
             {team.tools && team.tools.length > 0 && ` · Tools: ${team.tools.join(", ")}`}
           </p>
           {team.members && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Reports To</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Reports To</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {team.members.map((m) => (
+                      <TableRow key={m.id}>
+                        <TableCell className="font-medium">{m.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{m.role}</TableCell>
+                        <TableCell className="text-muted-foreground">{m.reports_to ?? "—"}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="md:hidden space-y-1.5">
                 {team.members.map((m) => (
-                  <TableRow key={m.id}>
-                    <TableCell className="font-medium">{m.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{m.role}</TableCell>
-                    <TableCell className="text-muted-foreground">{m.reports_to ?? "—"}</TableCell>
-                  </TableRow>
+                  <div key={m.id} className="border rounded-md p-3">
+                    <div className="font-medium text-sm">{m.name}</div>
+                    <div className="text-xs text-muted-foreground">{m.role}</div>
+                    {m.reports_to && (
+                      <div className="text-xs text-muted-foreground">Reports to: {m.reports_to}</div>
+                    )}
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </section>
       ))}

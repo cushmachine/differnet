@@ -15,7 +15,7 @@ export default async function RaciPage() {
   const decisions = await readRaci();
 
   return (
-    <div className="p-6 max-w-5xl">
+    <div className="p-4 md:p-6 max-w-5xl">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-medium">RACI Matrix</h2>
         <EditPrompt commands={[{ label: "Edit RACI", command: "/raci" }]} />
@@ -33,37 +33,56 @@ export default async function RaciPage() {
           </code>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Decision</TableHead>
-              <TableHead>Responsible</TableHead>
-              <TableHead>Accountable</TableHead>
-              <TableHead>Consulted</TableHead>
-              <TableHead>Informed</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <>
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Decision</TableHead>
+                  <TableHead>Responsible</TableHead>
+                  <TableHead>Accountable</TableHead>
+                  <TableHead>Consulted</TableHead>
+                  <TableHead>Informed</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {decisions.map((d) => (
+                  <TableRow key={d.name}>
+                    <TableCell>
+                      <div className="font-medium">{d.name}</div>
+                      {d.description && (
+                        <div className="text-[11px] text-muted-foreground">{d.description}</div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm">{d.responsible}</TableCell>
+                    <TableCell className="text-sm">{d.accountable}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {d.consulted.length > 0 ? d.consulted.join(", ") : "—"}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {d.informed.length > 0 ? d.informed.join(", ") : "—"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="md:hidden space-y-2">
             {decisions.map((d) => (
-              <TableRow key={d.name}>
-                <TableCell>
-                  <div className="font-medium">{d.name}</div>
-                  {d.description && (
-                    <div className="text-[11px] text-muted-foreground">{d.description}</div>
-                  )}
-                </TableCell>
-                <TableCell className="text-sm">{d.responsible}</TableCell>
-                <TableCell className="text-sm">{d.accountable}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {d.consulted.length > 0 ? d.consulted.join(", ") : "—"}
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {d.informed.length > 0 ? d.informed.join(", ") : "—"}
-                </TableCell>
-              </TableRow>
+              <div key={d.name} className="border rounded-md p-3 space-y-1.5">
+                <div className="font-medium text-sm">{d.name}</div>
+                {d.description && <div className="text-[11px] text-muted-foreground">{d.description}</div>}
+                <div className="grid grid-cols-2 gap-1 text-xs">
+                  <div><span className="text-muted-foreground">R:</span> {d.responsible}</div>
+                  <div><span className="text-muted-foreground">A:</span> {d.accountable}</div>
+                  <div className="col-span-2"><span className="text-muted-foreground">C:</span> {d.consulted.length > 0 ? d.consulted.join(", ") : "—"}</div>
+                  <div className="col-span-2"><span className="text-muted-foreground">I:</span> {d.informed.length > 0 ? d.informed.join(", ") : "—"}</div>
+                </div>
+              </div>
             ))}
-          </TableBody>
-        </Table>
+          </div>
+        </>
       )}
     </div>
   );

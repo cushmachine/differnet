@@ -44,10 +44,8 @@ export async function toggleDaemon(): Promise<{ error?: string }> {
       process.kill(pid, "SIGTERM");
       try { fsSync.unlinkSync(pidFile); } catch {}
     } else {
-      // Resolve daemon entry from package root via import.meta
-      const thisFile = new URL(import.meta.url).pathname;
-      const pkgRoot = path.resolve(path.dirname(thisFile), "..", "..", "..");
-      const daemonEntry = path.join(pkgRoot, "daemon", "index.mjs");
+      // Next.js server runs from the package root (via npm run dev or npx differnet dev)
+      const daemonEntry = path.join(process.cwd(), "daemon", "index.mjs");
       const logFile = path.join(ROOT, "data", "daemon.log");
 
       fsSync.mkdirSync(path.join(ROOT, "data"), { recursive: true });

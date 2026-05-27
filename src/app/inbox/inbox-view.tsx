@@ -24,7 +24,7 @@ export function InboxView({
   };
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-4 md:p-6 max-w-4xl">
       <h1 className="text-lg font-semibold mb-4">Inbox</h1>
 
       <div className="flex gap-1 mb-4">
@@ -90,7 +90,7 @@ export function InboxView({
                       {msg.status === "unread" && (
                         <button
                           onClick={() => updateMessageStatus(msg.slug, "read")}
-                          className="text-xs px-2.5 py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          className="text-xs px-2.5 py-2 md:py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                         >
                           Mark read
                         </button>
@@ -98,7 +98,7 @@ export function InboxView({
                       {msg.status === "read" && (
                         <button
                           onClick={() => updateMessageStatus(msg.slug, "unread")}
-                          className="text-xs px-2.5 py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          className="text-xs px-2.5 py-2 md:py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                         >
                           Mark unread
                         </button>
@@ -106,7 +106,7 @@ export function InboxView({
                       {msg.status !== "archived" && (
                         <button
                           onClick={() => updateMessageStatus(msg.slug, "archived")}
-                          className="text-xs px-2.5 py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          className="text-xs px-2.5 py-2 md:py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                         >
                           Archive
                         </button>
@@ -114,7 +114,7 @@ export function InboxView({
                       {msg.status === "archived" && (
                         <button
                           onClick={() => updateMessageStatus(msg.slug, "unread")}
-                          className="text-xs px-2.5 py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          className="text-xs px-2.5 py-2 md:py-1 rounded border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                         >
                           Move to inbox
                         </button>

@@ -18,7 +18,7 @@ export default async function ConnectionsPage() {
   entries.forEach((e) => { slugToName[e.slug] = e.name; });
 
   return (
-    <div className="p-6 max-w-5xl">
+    <div className="p-4 md:p-6 max-w-5xl">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-medium">Connections</h2>
         <EditPrompt commands={[{ label: "Edit connections", command: "/edit-connections" }]} />
@@ -38,36 +38,53 @@ export default async function ConnectionsPage() {
           </code>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>From</TableHead>
-              <TableHead className="w-10"></TableHead>
-              <TableHead>To</TableHead>
-              <TableHead>Description</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <>
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>From</TableHead>
+                  <TableHead className="w-10"></TableHead>
+                  <TableHead>To</TableHead>
+                  <TableHead>Description</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {connections.map((conn, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="font-medium">{slugToName[conn.from] ?? conn.from}</div>
+                      <code className="text-[10px] text-zinc-400">{conn.from}</code>
+                    </TableCell>
+                    <TableCell className="text-center text-muted-foreground">
+                      {conn.bidirectional ? "↔" : "→"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">{slugToName[conn.to] ?? conn.to}</div>
+                      <code className="text-[10px] text-zinc-400">{conn.to}</code>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {conn.description}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="md:hidden space-y-2">
             {connections.map((conn, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <div className="font-medium">{slugToName[conn.from] ?? conn.from}</div>
-                  <code className="text-[10px] text-zinc-400">{conn.from}</code>
-                </TableCell>
-                <TableCell className="text-center text-muted-foreground">
-                  {conn.bidirectional ? "↔" : "→"}
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium">{slugToName[conn.to] ?? conn.to}</div>
-                  <code className="text-[10px] text-zinc-400">{conn.to}</code>
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {conn.description}
-                </TableCell>
-              </TableRow>
+              <div key={i} className="border rounded-md p-3 space-y-1">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-medium">{slugToName[conn.from] ?? conn.from}</span>
+                  <span className="text-muted-foreground">{conn.bidirectional ? "↔" : "→"}</span>
+                  <span className="font-medium">{slugToName[conn.to] ?? conn.to}</span>
+                </div>
+                <div className="text-xs text-muted-foreground">{conn.description}</div>
+              </div>
             ))}
-          </TableBody>
-        </Table>
+          </div>
+        </>
       )}
     </div>
   );

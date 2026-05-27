@@ -11,8 +11,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "better-sqlite3": "^11.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cron-parser": "^5.0.0",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.1",
     "lucide-react": "^0.576.0",
@@ -20,8 +22,6 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "better-sqlite3": "^11.0.0",
-    "cron-parser": "^5.0.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.7.0",
     "tailwind-merge": "^3.5.0"
@@ -29,8 +29,8 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
-    "@types/js-yaml": "^4.0.9",
     "@types/better-sqlite3": "^7.6.0",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

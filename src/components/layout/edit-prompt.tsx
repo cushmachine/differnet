@@ -22,7 +22,7 @@ export function EditPrompt({
         <button
           key={cmd.command}
           onClick={() => copy(cmd.command)}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-2 md:px-2.5 md:py-1 text-xs md:text-[11px] rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors"
         >
           {copied === cmd.command ? (
             <Check className="h-3 w-3 text-emerald-500" />

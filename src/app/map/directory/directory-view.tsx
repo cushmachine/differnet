@@ -27,11 +27,11 @@ export function DirectoryView({ entries }: { entries: DirectoryEntry[] }) {
     : entries.filter((e) => e.teams.includes(teamFilter));
 
   return (
-    <div className="p-6 max-w-6xl">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
+    <div className="p-4 md:p-6 max-w-6xl">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
           <h2 className="text-sm font-medium">Directory</h2>
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap">
             {teams.map((t) => (
               <button
                 key={t}
@@ -60,40 +60,62 @@ export function DirectoryView({ entries }: { entries: DirectoryEntry[] }) {
           </code>
         </div>
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Teams</TableHead>
-              <TableHead>Used by skills</TableHead>
-              <TableHead>Agent notes</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+        <>
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Teams</TableHead>
+                  <TableHead>Used by skills</TableHead>
+                  <TableHead>Agent notes</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((entry) => (
+                  <TableRow key={entry.slug}>
+                    <TableCell>
+                      <div className="font-medium">{entry.name}</div>
+                      {entry.subname && (
+                        <div className="text-[11px] text-muted-foreground">{entry.subname}</div>
+                      )}
+                      <code className="text-[10px] text-zinc-400">{entry.slug}</code>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {entry.teams.join(", ")}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {entry.referencedBySkills.length > 0
+                        ? entry.referencedBySkills.join(", ")
+                        : "—"}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
+                      {entry.agent_notes ?? "—"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="md:hidden space-y-2">
             {filtered.map((entry) => (
-              <TableRow key={entry.slug}>
-                <TableCell>
-                  <div className="font-medium">{entry.name}</div>
-                  {entry.subname && (
-                    <div className="text-[11px] text-muted-foreground">{entry.subname}</div>
+              <div key={entry.slug} className="border rounded-md p-3 space-y-1">
+                <div className="font-medium text-sm">{entry.name}</div>
+                {entry.subname && <div className="text-[11px] text-muted-foreground">{entry.subname}</div>}
+                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                  <span>Teams: {entry.teams.join(", ")}</span>
+                  {entry.referencedBySkills.length > 0 && (
+                    <span>Skills: {entry.referencedBySkills.join(", ")}</span>
                   )}
-                  <code className="text-[10px] text-zinc-400">{entry.slug}</code>
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {entry.teams.join(", ")}
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {entry.referencedBySkills.length > 0
-                    ? entry.referencedBySkills.join(", ")
-                    : "—"}
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
-                  {entry.agent_notes ?? "—"}
-                </TableCell>
-              </TableRow>
+                </div>
+                {entry.agent_notes && (
+                  <div className="text-xs text-muted-foreground">{entry.agent_notes}</div>
+                )}
+              </div>
             ))}
-          </TableBody>
-        </Table>
+          </div>
+        </>
       )}
     </div>
   );

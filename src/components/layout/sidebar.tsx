@@ -1,8 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Inbox,
   Zap,
@@ -11,6 +18,7 @@ import {
   Lock,
   Settings,
   GitBranch,
+  Menu,
 } from "lucide-react";
 import type { DaemonStatusColor } from "@/types";
 
@@ -30,20 +38,23 @@ const daemonDot: Record<DaemonStatusColor, string> = {
   purple: "bg-violet-400",
 };
 
-export function Sidebar({
-  unreadCount = 0,
-  daemonStatus,
-  hiddenPages = [],
-}: {
+interface SidebarProps {
   unreadCount?: number;
   daemonStatus: { color: DaemonStatusColor; label: string };
   hiddenPages?: string[];
-}) {
+}
+
+function SidebarContent({
+  unreadCount = 0,
+  daemonStatus,
+  hiddenPages = [],
+  onNavigate,
+}: SidebarProps & { onNavigate?: () => void }) {
   const pathname = usePathname();
   const visibleItems = navItems.filter((item) => !hiddenPages.includes(item.id));
 
   return (
-    <aside className="flex h-full w-52 shrink-0 flex-col border-r bg-zinc-950 text-zinc-300">
+    <>
       <div className="px-4 py-4">
         <span className="text-sm font-semibold tracking-tight text-white font-mono">
           differnet
@@ -60,6 +71,7 @@ export function Sidebar({
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={cn(
                 "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
                 isActive
@@ -82,6 +94,7 @@ export function Sidebar({
       <div className="px-2 pb-2 space-y-0.5">
         <Link
           href="/settings"
+          onClick={onNavigate}
           className={cn(
             "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
             pathname === "/settings"
@@ -112,6 +125,34 @@ export function Sidebar({
           </span>
         </div>
       </div>
+    </>
+  );
+}
+
+export function Sidebar(props: SidebarProps) {
+  return (
+    <aside className="hidden md:flex h-full w-52 shrink-0 flex-col border-r bg-zinc-950 text-zinc-300">
+      <SidebarContent {...props} />
     </aside>
+  );
+}
+
+export function MobileSidebar(props: SidebarProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <button className="p-1 text-zinc-400" aria-label="Open navigation">
+          <Menu className="h-5 w-5" />
+        </button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-52 p-0 bg-zinc-950 text-zinc-300 border-r-0">
+        <SheetTitle className="sr-only">Navigation</SheetTitle>
+        <div className="flex h-full flex-col">
+          <SidebarContent {...props} onNavigate={() => setOpen(false)} />
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

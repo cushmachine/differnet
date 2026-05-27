@@ -14,7 +14,7 @@ const allPages = [
 
 export function SettingsView({ settings }: { settings: AppSettings }) {
   return (
-    <div className="p-6 max-w-2xl space-y-8">
+    <div className="p-4 md:p-6 max-w-2xl space-y-8">
       <h1 className="text-lg font-semibold">Settings</h1>
 
       <section>
