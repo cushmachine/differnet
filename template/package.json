@@ -1,0 +1,13 @@
+{
+  "name": "my-company-brain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Company brain powered by differnet",
+  "scripts": {
+    "dev": "npx differnet dev",
+    "update": "npx differnet update"
+  },
+  "dependencies": {
+    "differnet": "file:.."
+  }
+}

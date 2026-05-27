@@ -1,0 +1,6 @@
+name: Slack
+auth_secret: SLACK_BOT_TOKEN
+base_url: https://slack.com/api
+health_endpoint: https://slack.com/api/auth.test
+teams: [operations, engineering, sales]
+owner: operations

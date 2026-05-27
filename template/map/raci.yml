@@ -1,0 +1,38 @@
+# RACI matrix — who is Responsible, Accountable, Consulted, Informed for each decision type.
+# Member IDs reference map/org.yml. Use /raci skill to update.
+
+decisions:
+  - name: Hiring
+    description: Approving new headcount and making offers
+    responsible: sarah-chen
+    accountable: sarah-chen
+    consulted: [david-park, rachel-green]
+    informed: []
+
+  - name: Vendor selection
+    description: Choosing and onboarding new suppliers or vendors
+    responsible: james-l
+    accountable: sarah-chen
+    consulted: [priya-s]
+    informed: [david-park]
+
+  - name: Architecture decisions
+    description: Technical architecture and infrastructure choices
+    responsible: david-park
+    accountable: david-park
+    consulted: [ana-t, chris-w]
+    informed: [sarah-chen]
+
+  - name: Budget approval
+    description: Signing off on purchases over $5,000
+    responsible: sarah-chen
+    accountable: sarah-chen
+    consulted: []
+    informed: [david-park, rachel-green]
+
+  - name: Customer escalation
+    description: Handling escalated customer issues
+    responsible: rachel-green
+    accountable: rachel-green
+    consulted: [sarah-chen]
+    informed: [tom-b]

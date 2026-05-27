@@ -1,0 +1,17 @@
+node_modules/
+
+# Secrets
+vault/.env
+vault/.env.local
+
+# Database
+data/differnet.db
+data/differnet.db-wal
+data/differnet.db-shm
+data/.heartbeat
+
+# Skill outputs (regenerated)
+.claude/skills/*/output/*
+!.claude/skills/*/output/.gitkeep
+
+.DS_Store

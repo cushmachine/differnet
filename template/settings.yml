@@ -1,0 +1,8 @@
+# User and display preferences.
+# hidden_pages uses an exclusion model — new pages show by default.
+
+user:
+  name: ""
+  teams: []
+
+hidden_pages: []

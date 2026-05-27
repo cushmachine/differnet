@@ -1,0 +1,80 @@
+# Validated by map/schemas/systems.schema.json
+# Run /onboarding or /integration-connector to populate.
+
+systems:
+  - name: Shopify
+    type: storefront
+    owner: engineering
+    data: [orders, customers, products, inventory]
+    integrates_with: [netsuite, shipstation, stripe]
+
+  - name: NetSuite
+    type: erp
+    owner: operations
+    data: [inventory, purchase-orders, financials, accounts-payable]
+    integrates_with: [shopify, shipstation]
+
+  - name: ShipStation
+    type: fulfillment
+    owner: operations
+    data: [shipments, tracking, carrier-rates]
+    integrates_with: [shopify, netsuite]
+
+  - name: HubSpot
+    type: crm
+    owner: sales
+    data: [leads, deals, contacts, companies]
+    integrates_with: [slack, email]
+
+  - name: Linear
+    type: project-management
+    owner: engineering
+    data: [issues, projects, cycles]
+    integrates_with: [github, slack]
+
+  - name: GitHub
+    type: source-control
+    owner: engineering
+    data: [repositories, pull-requests, deployments]
+    integrates_with: [linear, datadog]
+
+  - name: Slack
+    type: communications
+    owner: everyone
+    channels:
+      ops-alerts: automated alerts from shipstation and netsuite
+      sales-deals: hubspot deal notifications
+      eng-deploys: github deploy notifications
+      general: company-wide announcements
+
+  - name: Gong
+    type: call-intelligence
+    owner: sales
+    data: [call-recordings, transcripts, deal-insights]
+    integrates_with: [hubspot]
+
+data_flows:
+  - from: shopify
+    to: netsuite
+    what: orders, inventory-adjustments
+    frequency: real-time
+    method: native-integration
+
+  - from: netsuite
+    to: shipstation
+    what: fulfillment-orders
+    frequency: hourly
+    method: api-sync
+
+  - from: shopify
+    to: hubspot
+    what: customer-data
+    frequency: daily
+    method: zapier
+    note: fragile — breaks monthly, needs replacement
+
+  - from: gong
+    to: hubspot
+    what: call-summaries, deal-updates
+    frequency: real-time
+    method: native-integration

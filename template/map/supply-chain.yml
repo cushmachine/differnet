@@ -1,0 +1,91 @@
+# Validated by map/schemas/supply-chain.schema.json
+# Run /onboarding to populate with your actual products and channels.
+
+products:
+  - sku: WDG-001
+    name: Widget Pro
+    pct_revenue: 40
+    bom:
+      - component: circuit-board
+        supplier: shenzhen-components
+        unit_cost: 12.50
+      - component: housing
+        supplier: shenzhen-components
+        unit_cost: 3.20
+      - component: packaging
+        supplier: packright
+        unit_cost: 1.80
+    landed_cost: 22.40
+    selling_price: 79.99
+    margin_pct: 72
+
+  - sku: WDG-002
+    name: Widget Lite
+    pct_revenue: 35
+    bom:
+      - component: housing
+        supplier: shenzhen-components
+        unit_cost: 3.20
+      - component: packaging
+        supplier: packright
+        unit_cost: 1.40
+    landed_cost: 8.60
+    selling_price: 39.99
+    margin_pct: 78
+
+  - sku: ACC-001
+    name: Widget Stand
+    pct_revenue: 25
+    bom:
+      - component: stand-base
+        supplier: packright
+        unit_cost: 2.10
+      - component: packaging
+        supplier: packright
+        unit_cost: 0.90
+    landed_cost: 5.20
+    selling_price: 24.99
+    margin_pct: 79
+
+channels:
+  - name: shopify-storefront
+    type: direct
+    fulfillment: shipstation
+    avg_ship_days: 3
+
+  - name: amazon-fba
+    type: marketplace
+    fulfillment: amazon
+    avg_ship_days: 2
+    fees_pct: 15
+
+  - name: wholesale
+    type: b2b
+    fulfillment: manual
+    avg_ship_days: 7
+    min_order_qty: 100
+
+inventory:
+  warehouses:
+    - name: LA Warehouse
+      type: owned
+      location: Los Angeles, CA
+      skus: [WDG-001, WDG-002, ACC-001]
+    - name: Amazon FBA
+      type: third-party
+      location: Multiple
+      skus: [WDG-001]
+
+  reorder_rules:
+    - sku: WDG-001
+      min_stock: 500
+      reorder_qty: 2000
+      supplier_lead_days: 45
+    - sku: WDG-002
+      min_stock: 300
+      reorder_qty: 1500
+      supplier_lead_days: 45
+    - sku: ACC-001
+      min_stock: 200
+      reorder_qty: 1000
+      supplier_lead_days: 14

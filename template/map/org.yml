@@ -1,0 +1,74 @@
+# Validated by map/schemas/org.schema.json
+# Replace this example data with your company's actual structure.
+# Run /onboarding to populate interactively.
+
+company:
+  name: Acme Commerce
+  industry: D2C e-commerce
+  founded: 2022
+  stage: Series B
+  headcount: 85
+  mission: Making premium widgets accessible to everyone
+
+teams:
+  - name: Operations
+    lead: sarah-chen
+    owns: [fulfillment, inventory, vendor-relations]
+    tools: [linear, slack, shipstation, netsuite]
+    members:
+      - name: Sarah Chen
+        id: sarah-chen
+        role: VP Operations
+        reports_to: null
+      - name: Mike Rivera
+        id: mike-r
+        role: Fulfillment Manager
+        reports_to: sarah-chen
+      - name: Priya Sharma
+        id: priya-s
+        role: Inventory Analyst
+        reports_to: sarah-chen
+      - name: James Li
+        id: james-l
+        role: Vendor Relations
+        reports_to: sarah-chen
+
+  - name: Engineering
+    lead: david-park
+    owns: [platform, integrations, data-pipeline]
+    tools: [github, linear, datadog, aws]
+    members:
+      - name: David Park
+        id: david-park
+        role: VP Engineering
+        reports_to: null
+      - name: Ana Torres
+        id: ana-t
+        role: Senior Engineer
+        reports_to: david-park
+      - name: Chris Wong
+        id: chris-w
+        role: Backend Engineer
+        reports_to: david-park
+      - name: Lisa Martinez
+        id: lisa-m
+        role: Frontend Engineer
+        reports_to: david-park
+
+  - name: Sales
+    lead: rachel-green
+    owns: [outbound, partnerships, channel-sales]
+    tools: [hubspot, slack, gong]
+    members:
+      - name: Rachel Green
+        id: rachel-green
+        role: Head of Sales
+        reports_to: null
+      - name: Tom Bradley
+        id: tom-b
+        role: Account Executive
+        reports_to: rachel-green
+      - name: Nina Vasquez
+        id: nina-v
+        role: Partnership Manager
+        reports_to: rachel-green

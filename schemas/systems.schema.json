@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Systems Map",
+  "type": "object",
+  "properties": {
+    "systems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "owner"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "owner": { "type": "string" },
+          "data": { "type": "array", "items": { "type": "string" } },
+          "integrates_with": { "type": "array", "items": { "type": "string" } },
+          "channels": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      }
+    },
+    "data_flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "what"],
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "what": { "type": "string" },
+          "frequency": { "type": "string" },
+          "method": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    }
+  }
+}

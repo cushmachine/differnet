@@ -1,0 +1,142 @@
+# Company directory — all counterparties, systems, and locations.
+# Each entry has a canonical slug for cross-referencing.
+# Connections between entries are documented separately below.
+
+entries:
+  - slug: shopify
+    name: Shopify
+    teams: [engineering, operations]
+    agent_notes: "Primary storefront. 65% of revenue."
+
+  - slug: netsuite
+    name: NetSuite
+    teams: [operations]
+    agent_notes: "ERP. Source of truth for inventory and financials."
+
+  - slug: shipstation
+    name: ShipStation
+    teams: [operations]
+    agent_notes: "Fulfillment software. Contract renews 2027-03-15."
+
+  - slug: hubspot
+    name: HubSpot
+    teams: [sales]
+    agent_notes: "CRM. Shopify→HubSpot sync via Zapier is fragile, breaks monthly."
+
+  - slug: linear
+    name: Linear
+    teams: [engineering]
+    agent_notes: "Project management. Integrates with GitHub and Slack."
+
+  - slug: slack
+    name: Slack
+    teams: [operations, engineering, sales]
+    agent_notes: "Comms. Key channels: ops-alerts, sales-deals, eng-deploys."
+
+  - slug: gong
+    name: Gong
+    teams: [sales]
+    agent_notes: "Call intelligence. Auto-syncs summaries to HubSpot."
+
+  - slug: shenzhen-components
+    name: Shenzhen Components Ltd
+    subname: Circuit boards & housings
+    teams: [operations]
+    agent_notes: "Single-source for circuit boards — risk. Wei Zhang is contact. 45d lead time, Net 60."
+
+  - slug: packright
+    name: PackRight Co
+    subname: Packaging
+    teams: [operations]
+    agent_notes: "14d lead time, Net 30. Maria Santos is contact."
+
+  - slug: aws
+    name: AWS
+    teams: [engineering]
+    agent_notes: "$8,500/mo cloud infra."
+
+  - slug: datadog
+    name: Datadog
+    teams: [engineering]
+    agent_notes: "$1,800/mo observability. Contract renews 2027-01-01."
+
+  - slug: stripe
+    name: Stripe
+    teams: [engineering]
+    agent_notes: "Payment processor."
+
+  - slug: returnbear
+    name: ReturnBear
+    teams: [operations]
+    agent_notes: "Returns processing. API integration."
+
+  - slug: flexport
+    name: Flexport
+    teams: [operations]
+    agent_notes: "Freight forwarding."
+
+  - slug: la-warehouse
+    name: LA Warehouse
+    subname: Los Angeles, CA
+    teams: [operations]
+    agent_notes: "Owned warehouse. Stocks WDG-001, WDG-002, ACC-001."
+
+  - slug: amazon-fba
+    name: Amazon FBA
+    subname: Multiple locations
+    teams: [operations]
+    agent_notes: "Third-party fulfillment. WDG-001 only. 25% of revenue channel."
+
+# Pairwise connections between entries.
+# Use slugs to reference. Set bidirectional: true for two-way relationships.
+# This section can be empty — the directory works fine without it.
+
+connections:
+  - from: shopify
+    to: netsuite
+    description: "Orders and inventory adjustments sync in real-time via native integration."
+
+  - from: shopify
+    to: shipstation
+    description: "Fulfillment orders pushed to ShipStation for shipping label generation."
+
+  - from: shopify
+    to: hubspot
+    description: "Customer data synced daily via Zapier. Fragile — breaks monthly."
+
+  - from: netsuite
+    to: shipstation
+    description: "Fulfillment orders synced hourly via API."
+
+  - from: stripe
+    to: shopify
+    description: "Payment processing for all direct orders."
+
+  - from: gong
+    to: hubspot
+    description: "Call summaries and deal updates auto-sync."
+
+  - from: shenzhen-components
+    to: la-warehouse
+    description: "Ships circuit boards and housings. 45-day lead time."
+
+  - from: packright
+    to: la-warehouse
+    description: "Ships packaging materials. 14-day lead time."
+
+  - from: flexport
+    to: la-warehouse
+    description: "Freight forwarding for inbound international shipments."
+
+  - from: la-warehouse
+    to: shipstation
+    description: "Inventory picked and packed, handed off for carrier shipping."
+
+  - from: la-warehouse
+    to: amazon-fba
+    description: "Periodic inventory transfers to replenish FBA stock."
+
+  - from: shopify
+    to: returnbear
+    bidirectional: true
+    description: "Returns initiated on Shopify are processed by ReturnBear; status updates flow back via API."

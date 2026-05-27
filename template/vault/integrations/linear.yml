@@ -1,0 +1,6 @@
+name: Linear
+auth_secret: LINEAR_API_KEY
+base_url: https://api.linear.app
+health_endpoint: https://api.linear.app/graphql
+teams: [engineering]
+owner: engineering

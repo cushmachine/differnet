@@ -22,6 +22,7 @@
 
 # misc
 .DS_Store
+test-results/
 *.pem
 
 # debug
@@ -30,8 +31,19 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+
+# company brain
+vault/.env
+vault/.env.local
+data/differnet.db
+data/differnet.db-wal
+data/differnet.db-shm
+data/.heartbeat
+daemon/node_modules/
+daemon/models/*.bin
+daemon/models/*.gguf
 
 # vercel
 .vercel

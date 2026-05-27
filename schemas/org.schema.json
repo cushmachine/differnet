@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Organization Map",
+  "type": "object",
+  "required": ["company", "teams"],
+  "properties": {
+    "company": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "industry": { "type": "string" },
+        "founded": { "type": "integer" },
+        "stage": { "type": "string" },
+        "headcount": { "type": "integer" },
+        "mission": { "type": "string" }
+      }
+    },
+    "teams": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "lead", "members"],
+        "properties": {
+          "name": { "type": "string" },
+          "lead": { "type": "string" },
+          "owns": { "type": "array", "items": { "type": "string" } },
+          "tools": { "type": "array", "items": { "type": "string" } },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "id", "role"],
+              "properties": {
+                "name": { "type": "string" },
+                "id": { "type": "string" },
+                "role": { "type": "string" },
+                "reports_to": { "type": ["string", "null"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

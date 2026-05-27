@@ -1,0 +1,6 @@
+name: HubSpot
+auth_secret: HUBSPOT_API_KEY
+base_url: https://api.hubapi.com
+health_endpoint: https://api.hubapi.com/crm/v3/objects/contacts?limit=1
+teams: [sales]
+owner: sales

@@ -1,36 +1,149 @@
-"use client";
+import { readVaultIntegrations, readSettings } from "@/lib/readers";
+import { EditPrompt } from "@/components/layout/edit-prompt";
+import { cn } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-import { useState } from "react";
-import { useProject } from "@/data/projects";
-import { vaultServices } from "@/data/vault";
-import { SplitPanel } from "@/components/layout/split-panel";
-import { ServiceList } from "@/components/vault/service-list";
-import { ServiceDetail } from "@/components/vault/service-detail";
+export const dynamic = "force-dynamic";
 
-export default function VaultPage() {
-  const { activeProject } = useProject();
-  const services = vaultServices[activeProject] ?? [];
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+const statusDot: Record<string, string> = {
+  connected: "bg-emerald-400",
+  disconnected: "bg-zinc-400",
+  error: "bg-red-400",
+  unconfigured: "bg-yellow-400",
+};
 
-  const activeService = services.find((s) => s.id === selectedId) ?? null;
+const statusLabel: Record<string, string> = {
+  connected: "Connected",
+  disconnected: "Not checked",
+  error: "Error",
+  unconfigured: "No API key",
+};
+
+export default async function VaultPage() {
+  const [integrations, settings] = await Promise.all([
+    readVaultIntegrations(),
+    readSettings(),
+  ]);
+
+  const userTeams = settings.user.teams;
+  const hasTeamFilter = userTeams.length > 0;
+
+  const relevant = hasTeamFilter
+    ? integrations.filter(
+        (i) => i.teams.length === 0 || i.teams.some((t) => userTeams.includes(t))
+      )
+    : integrations;
+
+  const other = hasTeamFilter
+    ? integrations.filter(
+        (i) => i.teams.length > 0 && !i.teams.some((t) => userTeams.includes(t))
+      )
+    : [];
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="px-6 py-3 border-b">
-        <h1 className="text-lg font-semibold">Services</h1>
+    <div className="p-6 max-w-5xl space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold">Vault</h1>
+        <EditPrompt commands={[
+          { label: "Add integration", command: "/integration-connector" },
+        ]} />
       </div>
-      <div className="flex-1 overflow-hidden">
-        <SplitPanel
-          left={
-            <ServiceList
-              services={services}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-            />
-          }
-          right={<ServiceDetail service={activeService} />}
-        />
-      </div>
+
+      {integrations.length === 0 ? (
+        <div className="py-12 text-center">
+          <p className="text-sm text-muted-foreground mb-3">No integrations configured.</p>
+          <p className="text-xs text-muted-foreground mb-1">Run this in Claude Code:</p>
+          <code className="text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded">
+            /integration-connector
+          </code>
+        </div>
+      ) : (
+        <>
+          <section>
+            <h2 className="text-sm font-medium mb-2">
+              {hasTeamFilter ? "Your integrations" : "All integrations"}
+            </h2>
+            {hasTeamFilter && !settings.user.name && (
+              <p className="text-xs text-muted-foreground mb-3">
+                Set your name and teams in{" "}
+                <code className="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-[11px]">settings.yml</code>{" "}
+                to filter integrations by team.
+              </p>
+            )}
+            <IntegrationTable integrations={relevant} />
+          </section>
+
+          {other.length > 0 && (
+            <section>
+              <h2 className="text-sm font-medium mb-2 text-muted-foreground">
+                Other teams
+              </h2>
+              <IntegrationTable integrations={other} dimmed />
+            </section>
+          )}
+        </>
+      )}
+
+      <section>
+        <h2 className="text-sm font-medium mb-2">Secrets</h2>
+        <p className="text-sm text-muted-foreground">
+          Stored in{" "}
+          <code className="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-xs">vault/.env</code>{" "}
+          (gitignored). Skills declare required secrets in their frontmatter.
+        </p>
+      </section>
     </div>
+  );
+}
+
+function IntegrationTable({
+  integrations,
+  dimmed = false,
+}: {
+  integrations: Awaited<ReturnType<typeof readVaultIntegrations>>;
+  dimmed?: boolean;
+}) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-8"></TableHead>
+          <TableHead>Name</TableHead>
+          <TableHead>Teams</TableHead>
+          <TableHead>Secret</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead>Last Checked</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {integrations.map((int) => (
+          <TableRow key={int.slug} className={cn(dimmed && "opacity-50")}>
+            <TableCell>
+              <span className={cn("inline-block h-2 w-2 rounded-full", statusDot[int.status])} />
+            </TableCell>
+            <TableCell className="font-medium">{int.name}</TableCell>
+            <TableCell className="text-xs text-muted-foreground">
+              {int.teams.length > 0 ? int.teams.join(", ") : "—"}
+            </TableCell>
+            <TableCell>
+              <code className="text-xs">{int.auth_secret || "—"}</code>
+            </TableCell>
+            <TableCell className="text-muted-foreground">
+              {statusLabel[int.status] ?? int.status}
+            </TableCell>
+            <TableCell className="text-xs text-muted-foreground">
+              {int.last_checked ?? "Never"}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

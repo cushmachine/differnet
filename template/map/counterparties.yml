@@ -1,0 +1,64 @@
+# Validated by map/schemas/counterparties.schema.json
+# Run /onboarding or /integration-connector to populate.
+
+suppliers:
+  - name: Shenzhen Components Ltd
+    type: manufacturer
+    contact: Wei Zhang
+    memory: people/wei-zhang
+    supplies: [widget-housings, circuit-boards]
+    lead_time_days: 45
+    payment_terms: Net 60
+    risk_notes: single-source for circuit-boards
+
+  - name: PackRight Co
+    type: packaging
+    contact: Maria Santos
+    supplies: [shipping-boxes, inserts, labels]
+    lead_time_days: 14
+    payment_terms: Net 30
+
+vendors:
+  - name: ShipStation
+    type: fulfillment-software
+    owner: operations
+    contract_renewal: 2027-03-15
+    monthly_cost: 2400
+
+  - name: Stripe
+    type: payments
+    owner: engineering
+
+  - name: Datadog
+    type: observability
+    owner: engineering
+    contract_renewal: 2027-01-01
+    monthly_cost: 1800
+
+  - name: AWS
+    type: cloud-infrastructure
+    owner: engineering
+    monthly_cost: 8500
+
+customers:
+  segments:
+    - name: Direct (Shopify)
+      pct_revenue: 65
+      channel: shopify-storefront
+    - name: Amazon
+      pct_revenue: 25
+      channel: amazon-fba
+    - name: Wholesale
+      pct_revenue: 10
+      channel: manual-invoicing
+
+partners:
+  - name: ReturnBear
+    type: returns-processing
+    integration: api
+    contact: Support Team
+
+  - name: Flexport
+    type: freight-forwarding
+    contact: Account Manager
+    memory: companies/flexport

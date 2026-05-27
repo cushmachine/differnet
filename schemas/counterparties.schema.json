@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Counterparties Map",
+  "type": "object",
+  "properties": {
+    "suppliers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "contact": { "type": "string" },
+          "memory": { "type": "string" },
+          "supplies": { "type": "array", "items": { "type": "string" } },
+          "lead_time_days": { "type": "integer" },
+          "payment_terms": { "type": "string" },
+          "risk_notes": { "type": "string" }
+        }
+      }
+    },
+    "vendors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "owner": { "type": "string" },
+          "contract_renewal": { "type": "string", "format": "date" },
+          "monthly_cost": { "type": "number" }
+        }
+      }
+    },
+    "customers": {
+      "type": "object",
+      "properties": {
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "channel"],
+            "properties": {
+              "name": { "type": "string" },
+              "pct_revenue": { "type": "number" },
+              "channel": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "partners": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "contact": { "type": "string" },
+          "memory": { "type": "string" },
+          "integration": { "type": "string" }
+        }
+      }
+    }
+  }
+}

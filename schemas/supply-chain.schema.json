@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Supply Chain Map",
+  "type": "object",
+  "properties": {
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sku", "name"],
+        "properties": {
+          "sku": { "type": "string" },
+          "name": { "type": "string" },
+          "pct_revenue": { "type": "number" },
+          "bom": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["component", "supplier"],
+              "properties": {
+                "component": { "type": "string" },
+                "supplier": { "type": "string" },
+                "unit_cost": { "type": "number" }
+              }
+            }
+          },
+          "landed_cost": { "type": "number" },
+          "selling_price": { "type": "number" },
+          "margin_pct": { "type": "number" }
+        }
+      }
+    },
+    "channels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "fulfillment": { "type": "string" },
+          "avg_ship_days": { "type": "integer" },
+          "fees_pct": { "type": "number" },
+          "min_order_qty": { "type": "integer" }
+        }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "properties": {
+        "warehouses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "location": { "type": "string" },
+              "skus": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "reorder_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sku", "min_stock", "reorder_qty"],
+            "properties": {
+              "sku": { "type": "string" },
+              "min_stock": { "type": "integer" },
+              "reorder_qty": { "type": "integer" },
+              "supplier_lead_days": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
