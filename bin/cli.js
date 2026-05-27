@@ -121,11 +121,109 @@ if (command === "init") {
     // next dev exits on ctrl-c
   }
 
+} else if (command === "daemon") {
+  const sub = process.argv[3];
+  const daemonEntry = path.join(PKG_ROOT, "daemon", "index.mjs");
+  const pidFile = path.join(CWD, "data", ".daemon.pid");
+  const heartbeat = path.join(CWD, "data", ".heartbeat");
+
+  function isDaemonRunning() {
+    try {
+      const pid = parseInt(fs.readFileSync(pidFile, "utf-8").trim(), 10);
+      process.kill(pid, 0);
+      return pid;
+    } catch {
+      return null;
+    }
+  }
+
+  function startDaemon() {
+    const pid = isDaemonRunning();
+    if (pid) {
+      console.log(`Daemon already running (PID ${pid})`);
+      return;
+    }
+
+    fs.mkdirSync(path.join(CWD, "data"), { recursive: true });
+    const logFile = path.join(CWD, "data", "daemon.log");
+    const out = fs.openSync(logFile, "a");
+    const err = fs.openSync(logFile, "a");
+
+    const { spawn } = require("child_process");
+    const child = spawn(process.execPath, [daemonEntry], {
+      detached: true,
+      stdio: ["ignore", out, err],
+      env: { ...process.env, DIFFERNET_ROOT: CWD },
+    });
+    child.unref();
+    console.log(`Daemon started (PID ${child.pid})`);
+    console.log(`  Logs: ${logFile}`);
+  }
+
+  function stopDaemon() {
+    const pid = isDaemonRunning();
+    if (!pid) {
+      console.log("Daemon is not running");
+      return;
+    }
+    process.kill(pid, "SIGTERM");
+    try { fs.unlinkSync(pidFile); } catch {}
+    console.log(`Daemon stopped (PID ${pid})`);
+  }
+
+  function showStatus() {
+    const pid = isDaemonRunning();
+    if (!pid) {
+      console.log("Daemon: not running");
+      return;
+    }
+    let lastSweep = "unknown";
+    try {
+      const stat = fs.statSync(heartbeat);
+      const ago = Math.round((Date.now() - stat.mtimeMs) / 1000);
+      lastSweep = `${ago}s ago`;
+    } catch {}
+    console.log(`Daemon: running (PID ${pid}), last sweep ${lastSweep}`);
+  }
+
+  if (sub === "start") {
+    startDaemon();
+  } else if (sub === "stop") {
+    stopDaemon();
+  } else if (sub === "status") {
+    showStatus();
+  } else if (sub === "install") {
+    import(path.join(PKG_ROOT, "daemon", "lib", "service.mjs")).then(({ installService }) => {
+      installService(CWD, daemonEntry);
+    });
+  } else if (sub === "uninstall") {
+    import(path.join(PKG_ROOT, "daemon", "lib", "service.mjs")).then(({ uninstallService }) => {
+      uninstallService();
+    });
+  } else {
+    // Smart default: start if not running, show status if running
+    const pid = isDaemonRunning();
+    if (pid) {
+      showStatus();
+    } else {
+      startDaemon();
+    }
+  }
+
 } else {
   console.log("differnet — company brain toolkit\n");
   console.log("Commands:");
   console.log("  init [path]   Scaffold a new company brain");
   console.log("  update        Sync managed skills and schemas");
   console.log("  dev           Start the dashboard");
+  console.log("  daemon        Start/manage the background daemon");
+  console.log("");
+  console.log("Daemon subcommands:");
+  console.log("  daemon          Start if stopped, show status if running");
+  console.log("  daemon start    Start the daemon");
+  console.log("  daemon stop     Stop the daemon");
+  console.log("  daemon status   Show daemon status");
+  console.log("  daemon install  Install as system service (auto-start on login)");
+  console.log("  daemon uninstall  Remove system service");
   console.log("");
 }

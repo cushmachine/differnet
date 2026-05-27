@@ -1,7 +1,7 @@
 ---
 name: Monday Morning
 description: Start-of-week automation chain — triage, summarize, and post
-schedule: "every Monday at 8:30am"
+schedule: "30 8 * * 1"
 status: draft
 skills:
   - inbox-triage

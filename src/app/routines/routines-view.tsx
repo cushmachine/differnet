@@ -9,9 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toggleRoutineStatus } from "./actions";
+import { toggleRoutineStatus, toggleDaemon } from "./actions";
 import { EditPrompt } from "@/components/layout/edit-prompt";
-import type { RoutineMeta, DaemonStatus } from "@/types";
+import type { RoutineMeta, DaemonStatus, ActivityEntry } from "@/types";
+import { useState } from "react";
 
 const statusDot: Record<string, string> = {
   active: "bg-emerald-400",
@@ -27,6 +28,42 @@ const daemonDot: Record<string, string> = {
   purple: "bg-violet-400",
 };
 
+const activityStatusDot: Record<string, string> = {
+  success: "bg-emerald-400",
+  failure: "bg-red-400",
+  skipped: "bg-yellow-400",
+  crashed: "bg-zinc-400",
+  running: "bg-blue-400",
+};
+
+function cronToLabel(cronExpr: string): string {
+  try {
+    const parts = cronExpr.trim().split(/\s+/);
+    if (parts.length !== 5) return cronExpr;
+    const [minute, hour, , , dayOfWeek] = parts;
+
+    if (minute.startsWith("*/") && hour === "*") return `Every ${minute.slice(2)} min`;
+    if (hour.startsWith("*/") && minute === "0") return `Every ${hour.slice(2)} hr`;
+    if (hour === "*" || minute === "*") return cronExpr;
+
+    const h = parseInt(hour, 10);
+    const m = parseInt(minute, 10);
+    if (isNaN(h) || isNaN(m)) return cronExpr;
+    const suffix = h >= 12 ? "PM" : "AM";
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    const time = m === 0 ? `${h12}:00 ${suffix}` : `${h12}:${String(m).padStart(2, "0")} ${suffix}`;
+
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    if (dayOfWeek === "*") return `Daily at ${time}`;
+    if (dayOfWeek === "1-5") return `Weekdays at ${time}`;
+    const dayList = dayOfWeek.split(",").map((d) => days[parseInt(d, 10)] ?? d);
+    if (dayList.length === 1) return `${dayList[0]} at ${time}`;
+    return `${dayList.join(", ")} at ${time}`;
+  } catch {
+    return cronExpr;
+  }
+}
+
 const tabs = [
   { id: "routines", label: "Routines" },
   { id: "activity", label: "Activity" },
@@ -36,11 +73,32 @@ export function RoutinesView({
   routines,
   daemonStatus,
   activeTab,
+  activity,
+  lastRuns,
 }: {
   routines: RoutineMeta[];
   daemonStatus: DaemonStatus;
   activeTab: string;
+  activity: ActivityEntry[];
+  lastRuns: Record<string, string | null>;
 }) {
+  const [daemonLoading, setDaemonLoading] = useState(false);
+  const [daemonError, setDaemonError] = useState<string | null>(null);
+
+  const handleDaemonToggle = async () => {
+    setDaemonLoading(true);
+    setDaemonError(null);
+    try {
+      const result = await toggleDaemon();
+      if (result?.error) setDaemonError(result.error);
+    } catch (err) {
+      setDaemonError("Failed to toggle daemon");
+    }
+    setDaemonLoading(false);
+  };
+
+  const isRunning = daemonStatus.color === "green" || daemonStatus.color === "yellow";
+
   return (
     <div className="p-6 max-w-5xl">
       <div className="flex items-center justify-between mb-1">
@@ -49,10 +107,26 @@ export function RoutinesView({
           <span className={cn("h-2 w-2 rounded-full", daemonDot[daemonStatus.color])} />
           Daemon: {daemonStatus.label}
           {daemonStatus.lastHeartbeat && (
-            <span>· Last sweep: {daemonStatus.lastHeartbeat.toLocaleTimeString()}</span>
+            <span>· Last sweep: {daemonStatus.lastHeartbeat}</span>
           )}
+          <button
+            onClick={handleDaemonToggle}
+            disabled={daemonLoading || daemonStatus.color === "purple"}
+            className={cn(
+              "ml-1 px-2 py-0.5 rounded border text-xs transition-colors",
+              daemonLoading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            )}
+          >
+            {daemonLoading ? "..." : isRunning ? "Stop" : "Start"}
+          </button>
         </div>
       </div>
+
+      {daemonError && (
+        <div className="text-xs text-red-500 mb-2 text-right">{daemonError}</div>
+      )}
 
       <div className="mb-4">
         <EditPrompt commands={[
@@ -81,10 +155,10 @@ export function RoutinesView({
       {daemonStatus.color === "grey" && (
         <div className="border rounded-md px-4 py-3 mb-4 bg-zinc-50 dark:bg-zinc-900">
           <p className="text-sm text-muted-foreground">
-            Daemon not installed — routines won&apos;t run on schedule. Paste into Claude Code:
+            Daemon not running — routines won&apos;t execute on schedule. Click &quot;Start&quot; above or run:
           </p>
           <code className="text-xs mt-1 block px-2 py-1 bg-white dark:bg-zinc-800 rounded border">
-            Help me install the differnet daemon so my routines run automatically
+            npx differnet daemon start
           </code>
         </div>
       )}
@@ -122,12 +196,14 @@ export function RoutinesView({
                       <div className="text-xs text-muted-foreground">{routine.description}</div>
                     )}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{routine.schedule}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {cronToLabel(routine.schedule)}
+                  </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {routine.skills.join(", ")}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
-                    —
+                    {lastRuns[routine.slug] ?? "—"}
                   </TableCell>
                   <TableCell>
                     <button
@@ -151,12 +227,43 @@ export function RoutinesView({
           </Table>
         )
       ) : (
-        <div className="py-12 text-center">
-          <p className="text-sm text-muted-foreground mb-3">No activity recorded yet.</p>
-          <p className="text-xs text-muted-foreground">
-            Run history will appear here once the daemon is executing routines.
-          </p>
-        </div>
+        activity.length === 0 ? (
+          <div className="py-12 text-center">
+            <p className="text-sm text-muted-foreground mb-3">No activity recorded yet.</p>
+            <p className="text-xs text-muted-foreground">
+              Run history will appear here once the daemon is executing routines.
+            </p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-8"></TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Actor</TableHead>
+                <TableHead>Description</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {activity.map((entry) => (
+                <TableRow key={entry.id}>
+                  <TableCell>
+                    <span className={cn("inline-block h-2 w-2 rounded-full", activityStatusDot[entry.status] ?? "bg-zinc-300")} />
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                    {entry.timestamp}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {entry.type.replace(/_/g, " ")}
+                  </TableCell>
+                  <TableCell className="text-sm">{entry.actor}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{entry.description}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )
       )}
     </div>
   );

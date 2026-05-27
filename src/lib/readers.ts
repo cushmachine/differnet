@@ -7,6 +7,7 @@ import type {
   SkillDetail,
   DaemonStatus,
   RoutineMeta,
+  ActivityEntry,
   VaultIntegration,
   MemoryPage,
   InboxMessage,
@@ -26,6 +27,8 @@ function toStr(val: unknown, includeTime = false): string {
 function resolve(...parts: string[]) {
   return path.join(ROOT, ...parts);
 }
+
+
 
 async function exists(filePath: string): Promise<boolean> {
   try {
@@ -73,6 +76,7 @@ export async function readSkills(): Promise<SkillMeta[]> {
 }
 
 export async function readSkill(slug: string): Promise<SkillDetail | null> {
+  if (slug.includes("/") || slug.includes("\\") || slug.includes("..")) return null;
   const skillFile = resolve(".claude", "skills", slug, "skill.md");
   if (!(await exists(skillFile))) return null;
 
@@ -83,13 +87,11 @@ export async function readSkill(slug: string): Promise<SkillDetail | null> {
     slug,
     name: data.name ?? slug,
     description: data.description ?? "",
-    type: data.type ?? "skill",
-    automation: data.automation ?? "documented",
     owner: data.owner ?? "unknown",
-    team: data.team ?? "unknown",
+    visibility: data.visibility ?? [data.team ?? "all"],
+    managed: data.managed === true,
     created: toStr(data.created),
     modified: toStr(data.modified),
-    tags: data.tags ?? [],
     triggers: data.triggers ?? [],
     secrets: data.secrets ?? [],
     content,
@@ -268,16 +270,58 @@ export async function readDaemonStatus(): Promise<DaemonStatus> {
   const stat = await fs.stat(heartbeatPath);
   const ageMs = Date.now() - stat.mtimeMs;
 
+  const timeStr = stat.mtime.toLocaleTimeString();
+
   if (ageMs < 90_000) {
-    return { color: "green", lastHeartbeat: stat.mtime, label: "Running" };
+    return { color: "green", lastHeartbeat: timeStr, label: "Running" };
   }
   if (ageMs < 300_000) {
-    return { color: "yellow", lastHeartbeat: stat.mtime, label: "Slow" };
+    return { color: "yellow", lastHeartbeat: timeStr, label: "Slow" };
   }
   if (ageMs < 600_000) {
-    return { color: "orange", lastHeartbeat: stat.mtime, label: "Stale" };
+    return { color: "orange", lastHeartbeat: timeStr, label: "Stale" };
   }
-  return { color: "orange", lastHeartbeat: stat.mtime, label: "Unresponsive" };
+  return { color: "orange", lastHeartbeat: timeStr, label: "Unresponsive" };
+}
+
+// --- Activity ---
+
+export async function readActivity(limit = 50): Promise<ActivityEntry[]> {
+  const dbPath = resolve("data", "differnet.db");
+  if (!(await exists(dbPath))) return [];
+
+  try {
+    const Database = (await import("better-sqlite3")).default;
+    const db = new Database(dbPath, { readonly: true, fileMustExist: true });
+    const rows = db
+      .prepare(
+        "SELECT id, timestamp, type, actor, description, status, duration_ms FROM activity ORDER BY timestamp DESC LIMIT ?"
+      )
+      .all(limit) as ActivityEntry[];
+    db.close();
+    return rows;
+  } catch {
+    return [];
+  }
+}
+
+export async function readLastRunForRoutine(slug: string): Promise<string | null> {
+  const dbPath = resolve("data", "differnet.db");
+  if (!(await exists(dbPath))) return null;
+
+  try {
+    const Database = (await import("better-sqlite3")).default;
+    const db = new Database(dbPath, { readonly: true, fileMustExist: true });
+    const row = db
+      .prepare(
+        "SELECT timestamp FROM activity WHERE actor = ? AND type = 'routine_run' ORDER BY timestamp DESC LIMIT 1"
+      )
+      .get(slug) as { timestamp: string } | undefined;
+    db.close();
+    return row?.timestamp ?? null;
+  } catch {
+    return null;
+  }
 }
 
 // --- Vault ---

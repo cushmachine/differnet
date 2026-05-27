@@ -20,6 +20,8 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "better-sqlite3": "^11.0.0",
+    "cron-parser": "^5.0.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.7.0",
     "tailwind-merge": "^3.5.0"
@@ -28,6 +30,7 @@
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/js-yaml": "^4.0.9",
+    "@types/better-sqlite3": "^7.6.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

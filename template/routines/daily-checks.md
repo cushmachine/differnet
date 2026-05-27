@@ -1,7 +1,7 @@
 ---
 name: Daily Checks
 description: Checks for package updates and runs memory sync
-schedule: "daily at 8am"
+schedule: "0 8 * * *"
 status: active
 skills:
   - check-for-updates

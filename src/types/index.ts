@@ -26,7 +26,7 @@ export type DaemonStatusColor = "green" | "yellow" | "orange" | "grey" | "purple
 
 export interface DaemonStatus {
   color: DaemonStatusColor;
-  lastHeartbeat: Date | null;
+  lastHeartbeat: string | null;
   label: string;
 }
 
@@ -44,10 +44,11 @@ export interface RoutineMeta {
 export interface ActivityEntry {
   id: number;
   timestamp: string;
-  type: "routine_run" | "skill_invocation" | "memory_update" | "map_change";
+  type: "routine_run" | "skill_invocation" | "daemon_event" | "memory_update" | "map_change";
   actor: string;
   description: string;
-  status: "success" | "failure";
+  status: "success" | "failure" | "running" | "skipped" | "crashed";
+  duration_ms?: number | null;
 }
 
 export interface VaultIntegration {
